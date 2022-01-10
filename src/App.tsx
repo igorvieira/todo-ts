@@ -16,6 +16,7 @@ function App() {
 
   const handleAddNewItems = (): void => {
     setListOfItems([...listOfItems, newItem])
+    setNewItem(initialContent)
   }
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,13 +28,20 @@ function App() {
     })
   }
 
+  const handleDeleteItemByID = (id: string) => {
+    const newList = listOfItems.filter(item => item.id !== id)
+    setListOfItems(newList)
+  }
+
   return (
     <div>
       <div>
         {
         listOfItems.map((item: Task) => (
             <div>
-              {item?.title}
+              <span>{item?.title}</span>
+              {' '}
+              <button onClick={() => handleDeleteItemByID(item?.id)}>Remove</button>
             </div>
           ))
         }
