@@ -8,24 +8,40 @@ function App() {
     title: string;
   }
 
-  const initialContent = { id: '', title: ''}
-
+  const initialContent = {
+    id: '',
+    title: ''
+  }
 
   const [ newItem, setNewItem ] = useState<Task>(initialContent)
   const [ listOfItems, setListOfItems ] = useState<Task[]>([]);
 
-  const handleAddNewItems = (): void => {
-    setListOfItems([...listOfItems, newItem])
-    setNewItem(initialContent)
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (newItem.id) {
+      const newList = listOfItems.filter(listItem => listItem.id !== newItem.id)
+
+      setListOfItems([...newList, newItem])
+    } else {
+      setListOfItems([...listOfItems, newItem])
+    }
+
   }
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault()
 
-    setNewItem({
-      id: `${event.target.value} - ${Math.random() * 100}`,
-      title: event.target.value
-    })
+    if (newItem.id) {
+      setNewItem({
+        id: newItem.id,
+        title: event.target.value
+      })
+    } else {
+      setNewItem({
+        id: `${event.target.value} - ${Math.random() * 100}`,
+        title: event.target.value
+      })
+    }
   }
 
   const handleDeleteItemByID = (id: string) => {
@@ -33,8 +49,18 @@ function App() {
     setListOfItems(newList)
   }
 
+  const handleEditItemByID  = (id: string) => {
+    const editItem = listOfItems.find(item => item.id === id)
+
+    setNewItem({
+      id: editItem?.id || '',
+      title: editItem?.title  || ''
+    })
+  }
+
+
   return (
-    <div>
+    <form onSubmit={(e) => handleSubmit(e)}>
       <div>
         {
         listOfItems.map((item: Task) => (
@@ -42,6 +68,7 @@ function App() {
               <span>{item?.title}</span>
               {' '}
               <button onClick={() => handleDeleteItemByID(item?.id)}>Remove</button>
+              <button onClick={() => handleEditItemByID(item?.id)}>Edit</button>
             </div>
           ))
         }
@@ -52,9 +79,9 @@ function App() {
           value={newItem?.title}
           onChange={(e) => handleOnChange(e)}
         />
-        <button onClick={() => handleAddNewItems()}>Add</button>
+        <button>Add</button>
       </div>
-    </div>
+    </form>
   );
 }
 
