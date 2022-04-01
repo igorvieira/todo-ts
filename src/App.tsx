@@ -1,88 +1,109 @@
-import React, { useState } from 'react';
-import './App.css';
+import React, { useState } from "react";
+import './App.css'
 
 function App() {
 
-  interface Task  {
-    id: string;
-    title: string;
+  type ItemProps = {
+    id: string
+    text: string
   }
 
-  const initialContent = {
-    id: '',
-    title: ''
+  const initialState = { id: '', text: ''}
+
+  const [item, setItem] = useState<ItemProps>(initialState)
+  const [list, setList] = useState<ItemProps[]>([])
+
+  const handleOnChange = (event: any) => {
+
+    if (item.id) {
+      setItem({
+        id: item.id,
+        text: event.target.value
+      })
+    } else {
+      setItem({
+        id: `${event.target.value} - ${Math.random() * 100}`,
+        text: event.target.value
+      })
+    }
+
   }
 
-  const [ newItem, setNewItem ] = useState<Task>(initialContent)
-  const [ listOfItems, setListOfItems ] = useState<Task[]>([]);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event:any) => {
     event.preventDefault()
 
-    if (newItem.id) {
-      const newList = listOfItems.filter(listItem => listItem.id !== newItem.id)
+    if (item.id) {
+      const newList = list.filter(listItem => listItem.id !== item.id)
 
-      setListOfItems([...newList, newItem])
+      setList([...newList, item])
     } else {
-      setListOfItems([...listOfItems, newItem])
+      setList([...list, item])
     }
 
+    setItem(initialState)
   }
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-
-    if (newItem.id) {
-      setNewItem({
-        id: newItem.id,
-        title: event.target.value
-      })
-    } else {
-      setNewItem({
-        id: `${event.target.value} - ${Math.random() * 100}`,
-        title: event.target.value
-      })
-    }
+  const handleDelete = (id: string) => {
+    const newList = list.filter(item =>  item.id !== id)
+    setList(newList)
   }
 
-  const handleDeleteItemByID = (id: string) => {
-    const newList = listOfItems.filter(item => item.id !== id)
-    setListOfItems(newList)
-  }
-
-  const handleEditItemByID  = (id: string) => {
-    const editItem = listOfItems.find(item => item.id === id)
-
-    setNewItem({
-      id: editItem?.id || '',
-      title: editItem?.title  || ''
+  const handleEdit = (id: string) => {
+    const editItem = list.find(item => item.id === id)
+    setItem({
+      id: `${editItem?.id}`,
+      text: `${editItem?.text}`
     })
   }
 
-
   return (
-    <form onSubmit={(e) => handleSubmit(e)}>
+    <div>
       <div>
-        {
-        listOfItems.map((item: Task) => (
-            <div>
-              <span>{item?.title}</span>
-              {' '}
-              <button onClick={() => handleDeleteItemByID(item?.id)}>Remove</button>
-              <button onClick={() => handleEditItemByID(item?.id)}>Edit</button>
-            </div>
-          ))
-        }
-      </div>
+        <div>
+          <div data-testid="todo-list">
+            {
+              list?.map((item, index) => (
+                <div
+                  key={`${item.id}-${index}`}>
+                  <span>{item.text}</span>
+                  <span> - </span>
+                  <span
+                    onClick={() => handleDelete(item.id)}
+                    data-testid={`remove-button-${index}`}
+                  >
+                    Excluir
+                  </span>
+                  {' / '}
+                  <span
+                    onClick={() => handleEdit(item.id)}
+                    data-testid={`edit-button-${index}`}
+                  >
+                    Editar
+                  </span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
 
-      <div>
-        <input
-          value={newItem?.title}
-          onChange={(e) => handleOnChange(e)}
-        />
-        <button>Add</button>
+        <form>
+          <input
+            type="text"
+            name="item"
+            value={item.text}
+            data-testid="input-text"
+            onChange={(e) => handleOnChange(e)}
+          />
+          <button
+            onClick={handleSubmit}
+            data-testid="submit"
+          >
+            Submit
+          </button>
+        </form>
       </div>
-    </form>
+    </div>
   );
 }
 
-export default App;
+export default App
