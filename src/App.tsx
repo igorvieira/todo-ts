@@ -14,7 +14,7 @@ function App() {
   const [item, setItem] = useState<ItemProps>(initialState)
   const [list, setList] = useState<ItemProps[]>([])
 
-  const handleOnChange = (event: any) => {
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
     if (item.id) {
       setItem({
@@ -30,7 +30,7 @@ function App() {
 
   }
 
-  const handleSubmit = (event:any) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (item.id) {
@@ -88,7 +88,7 @@ function App() {
           </div>
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
             name="item"
@@ -97,7 +97,6 @@ function App() {
             onChange={(e) => handleOnChange(e)}
           />
           <button
-            onClick={handleSubmit}
             data-testid="submit"
           >
             Submit
