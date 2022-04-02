@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import './App.css'
+
+
+export type ItemProps = {
+  id: string
+  text: string
+}
+
 
 function App() {
-
-  type ItemProps = {
-    id: string
-    text: string
-  }
 
   const initialState = { id: '', text: ''}
 
@@ -60,10 +61,11 @@ function App() {
     <div>
       <div>
         <div>
-          <div data-testid="todo-list">
+          <div>
             {
               list?.map((item, index) => (
                 <div
+                  data-testid="todo-item"
                   key={`${item.id}-${index}`}>
                   <span>{item.text}</span>
                   <span> - </span>
